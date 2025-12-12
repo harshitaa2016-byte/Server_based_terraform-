@@ -4,6 +4,9 @@
 
 ## Architecture
 
+## Architecture
+
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │                     AWS VPC (10.0.0.0/16)                    │
 │                                                              │
@@ -43,6 +46,8 @@
 │  │   └──────────────────────────────────────────────┘     │  │
 │  └────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────┘
+```
+
 
 
 
@@ -102,7 +107,7 @@ terraform output -raw load_balancer_dns
 2. Step 2 — Create EKS Cluster + Node Group
 
 K8s environment:
-                     ┌────────────────────────────────────┐
+                                         ┌────────────────────────────────────┐
                      │       EKS CONTROL PLANE (AWS)      │
                      │  - Kubernetes API Server           │
                      │  - Scheduler / Controller Manager  │
@@ -127,6 +132,9 @@ K8s environment:
 │  - container runtime    │                         │  - container runtime    │
 │  - bootstrap.sh         │                         │  - bootstrap.sh         │
 └─────────────────────────┘                         └─────────────────────────┘
+
+                 
+
 
 
 # EKS
