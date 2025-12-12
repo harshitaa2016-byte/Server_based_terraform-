@@ -4,7 +4,6 @@
 
 ## Architecture
 
-```text
 ┌──────────────────────────────────────────────────────────────┐
 │                     AWS VPC (10.0.0.0/16)                    │
 │                                                              │
@@ -44,7 +43,7 @@
 │  │   └──────────────────────────────────────────────┘     │  │
 │  └────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────┘
-```
+
 
 
  To run:
@@ -103,22 +102,32 @@ terraform output -raw load_balancer_dns
 2. Step 2 — Create EKS Cluster + Node Group
 
 K8s environment:
+                     ┌────────────────────────────────────┐
+                     │       EKS CONTROL PLANE (AWS)      │
+                     │  - Kubernetes API Server           │
+                     │  - Scheduler / Controller Manager  │
+                     │  - etcd (AWS managed)              │
+                     └───────────────┬────────────────────┘
+                                     │
+                             authenticate via IAM
+                                     │
+                     Node joins cluster using:
+                     - bootstrap.sh (EKS AMI)
+                     - aws-auth ConfigMap
+                     - IAM Role for NodeGroup
+                                     │
+        ┌────────────────────────────┴────────────────────────────┐
+        │                                                         │
+┌─────────────────────────┐                         ┌─────────────────────────┐
+│    WORKER NODE (EC2)    │                         │    WORKER NODE (EC2)    │
+│ ----------------------- │                         │ ----------------------- │
+│  - kubelet              │                         │  - kubelet              │
+│  - kube-proxy           │                         │  - kube-proxy           │
+│  - VPC CNI plugin       │                         │  - VPC CNI plugin       │
+│  - container runtime    │                         │  - container runtime    │
+│  - bootstrap.sh         │                         │  - bootstrap.sh         │
+└─────────────────────────┘                         └─────────────────────────┘
 
-                 EKS Control Plane (AWS-managed)
-                ┌──────────────────────────────┐
-                │   API Server / Scheduler     │
-                └───────────────┬──────────────┘
-                                │
-                          authenticate via IAM
-                                │
-         ┌──────────────────────┴──────────────────────┐
-         │                                             │
- Worker Node (EC2)                              Worker Node (EC2)
- ┌─────────────────────────┐                 ┌─────────────────────────┐
- │ kubelet                 │                 │ kubelet                 │
- │ bootstrap.sh            │                 │ bootstrap.sh            │
- │ VPC CNI plugin          │                 │ VPC CNI plugin          │
- └─────────────────────────┘                 └─────────────────────────┘
 
 # EKS
 - Version: 1.29
